@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "#api/*": ["src/api/*"],
+      "#application/*": ["src/application/*"],
+      "#domain/*": ["src/domain/*"],
+      "#infra/*": ["src/infrastructure/*"],
+      "#repositories/*": ["src/repositories/*"],
+      "#services/*": ["src/services/*"],
+      "#controllers/*": ["src/controllers/*"],
+      "#routes/*": ["src/routes/*"]
+    }
+  },
+  "include": ["src/**/*.js"],
+  "exclude": ["node_modules"]
+}

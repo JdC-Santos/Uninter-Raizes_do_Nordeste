@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Página-1" id="L8WFfOLMs1jewJfQG5mL">
+    <mxGraphModel dx="1414" dy="743" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="410" width="370" x="304" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-25" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontStyle=1;fontSize=17;" value="Fidelidade, relatórios e auditoria" vertex="1">
+          <mxGeometry height="30" width="360" x="170" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-86" edge="1" parent="1" source="VUa5wZaPzLyIcbLO3qN8-58" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;" target="VUa5wZaPzLyIcbLO3qN8-80">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-58" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Cliente" vertex="1">
+          <mxGeometry height="60" width="30" x="190" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-89" edge="1" parent="1" source="VUa5wZaPzLyIcbLO3qN8-59" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;" target="VUa5wZaPzLyIcbLO3qN8-81">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-59" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Gerente" vertex="1">
+          <mxGeometry height="60" width="30" x="190" y="365" as="geometry" />
+        </mxCell>
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-87" edge="1" parent="1" source="VUa5wZaPzLyIcbLO3qN8-60" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;" target="VUa5wZaPzLyIcbLO3qN8-80">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-60" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Atendente" vertex="1">
+          <mxGeometry height="60" width="30" x="190" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-88" edge="1" parent="1" source="VUa5wZaPzLyIcbLO3qN8-62" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;" target="VUa5wZaPzLyIcbLO3qN8-81">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WLbL2cC7nBYRUulX5g6z-2" edge="1" parent="1" source="VUa5wZaPzLyIcbLO3qN8-62" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;" target="WLbL2cC7nBYRUulX5g6z-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-62" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Administrador" vertex="1">
+          <mxGeometry height="60" width="30" x="190" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-80" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Consultar pontos" vertex="1">
+          <mxGeometry height="80" width="120" x="440" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="VUa5wZaPzLyIcbLO3qN8-81" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Consultar relatórios gerenciais" vertex="1">
+          <mxGeometry height="80" width="120" x="429" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="WLbL2cC7nBYRUulX5g6z-1" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Consultar auditoria" vertex="1">
+          <mxGeometry height="80" width="120" x="440" y="430" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
