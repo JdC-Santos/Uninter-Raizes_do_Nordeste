@@ -11,7 +11,8 @@
     "#repositories/*": "./src/repositories/*",
     "#services/*": "./src/services/*",
     "#controllers/*": "./src/controllers/*",
-    "#routes/*": "./src/routes/*"
+    "#routes/*": "./src/routes/*",
+    "#middlewares/*":"./src/middlewares/*"
   },
   "scripts": {
     "dev": "nodemon src/server.js",
