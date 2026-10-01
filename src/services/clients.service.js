@@ -11,9 +11,9 @@ const cadastrarCliente = async (cliente) => {
 
   const { nome, email, senha, CPF } = cliente;
 
-  const umOuMaisCamposNaoInformados = !nome || !email || !senha || !CPF;
+  const campoNaoInformado = !nome || !email || !senha || !CPF;
 
-  if (umOuMaisCamposNaoInformados) {
+  if (campoNaoInformado) {
     throw new Error("Campos obrigatórios não informados!");
   }
 
