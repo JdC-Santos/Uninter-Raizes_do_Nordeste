@@ -40,5 +40,5 @@ INSERT INTO tb_unidade_produto (
   flg_disponivel
 )
 VALUES
-(null, 1, 50, 30.50, 1),
-(null, 2, 30, 15.25, 1);
+(1, 1, 50, 30.50, 1),
+(1, 2, 30, 15.25, 1);
