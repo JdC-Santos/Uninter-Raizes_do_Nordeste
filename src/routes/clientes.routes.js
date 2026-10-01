@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { cadastrar } from '#controllers/clients.controller.js';
+import { cadastrarCliente } from '#controllers/clientes.controller.js';
 
-const router = Router();
+const rotas = Router();
 
 /**
  * POST /clientes
@@ -12,6 +12,6 @@ const router = Router();
  * @returns {ClienteResponse201} 201 - Cliente cadastrado com sucesso.
  * @returns {Response400} 400 - Dados inválidos ou cliente já cadastrado.
  */
-router.post('/', cadastrar);
+rotas.post('/', cadastrarCliente);
 
-export default router;
+export default rotas;

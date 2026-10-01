@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
-import { findByEmail } from '#repositories/clients.repository.js';
+import { buscarPorEmail } from '#repositories/clientes.repository.js';
 
 const autenticar = async (email, senha) => {
 
@@ -11,7 +10,7 @@ const autenticar = async (email, senha) => {
     throw new Error('E-mail e senha são obrigatórios!');
   }
 
-  const usuario = await findByEmail(email);
+  const usuario = await buscarPorEmail(email);
 
   if (!usuario) {
     throw new Error('E-mail ou senha inválidos!');
