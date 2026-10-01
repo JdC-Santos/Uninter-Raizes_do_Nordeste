@@ -5,7 +5,7 @@ import { autenticarToken } from '../../middlewares/auth.middleware.js';
 const rotas = Router();
 
 /**
- * POST /pedidos
+ * POST /pedidos/cadastrar
  * @summary Cria um novo pedido
  * @tags Pedidos
  * @description Valida os produtos, grava o pedido e seus itens e atualiza o estoque.
@@ -15,6 +15,6 @@ const rotas = Router();
  * @returns {Response400} 400 - Dados do pedido inválidos.
  * @returns {Response401} 401 - Token não informado, inválido ou expirado.
  */
-rotas.post('/', autenticarToken, cadastrarPedido);
+rotas.post('/cadastrar', autenticarToken, cadastrarPedido);
 
 export default rotas;
