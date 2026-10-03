@@ -1,0 +1,331 @@
+import jwt from 'jsonwebtoken';
+import request from 'supertest';
+import app from '../app.js';
+import db from '#infra/database.js';
+
+describe('Autenticação das rotas protegidas', () => {
+  afterAll(async () => {
+    await db.end();
+  });
+
+  test('Deve retornar 401 ao acessar pedidos sem token', async () => {
+    const resposta = await request(app)
+      .get('/pedidos');
+
+    expect(resposta.status).toBe(401);
+    expect(resposta.body.error).toBe('NAO_AUTENTICADO');
+  });
+
+  test('Deve retornar 401 ao acessar pedidos com token inválido', async () => {
+    const resposta = await request(app)
+      .get('/pedidos')
+      .set('Authorization', 'Bearer token-invalido');
+
+    expect(resposta.status).toBe(401);
+    expect(resposta.body.error).toBe('TOKEN_INVALIDO');
+  });
+
+  test('Deve retornar 403 quando cliente tentar atualizar status do pedido', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const resposta = await request(app)
+      .patch('/pedidos/1/status')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        status: 'EM_PREPARO'
+      });
+
+    expect(resposta.status).toBe(403);
+    expect(resposta.body.error).toBe('ACESSO_NEGADO');
+  });
+
+  test('Deve retornar 400 ao consultar pedidos com canal inválido', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const resposta = await request(app)
+      .get('/pedidos?canalPedido=INVALIDO')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(resposta.status).toBe(400);
+    expect(resposta.body.message).toBe('Canal do pedido inválido!');
+  });
+
+  test('Deve consultar pedidos filtrando por canal válido', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const resposta = await request(app)
+      .get('/pedidos?canalPedido=WEB')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(resposta.status).toBe(200);
+    expect(Array.isArray(resposta.body)).toBe(true);
+  });
+
+  test('Deve consultar os pedidos do usuário autenticado', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const resposta = await request(app)
+      .get('/pedidos')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(resposta.status).toBe(200);
+    expect(Array.isArray(resposta.body)).toBe(true);
+  });
+
+  test('Deve criar um pedido válido', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const resposta = await request(app)
+      .post('/pedidos')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        idUnidade: 1,
+        canalPedido: 'WEB',
+        itens: [
+          {
+            idProduto: 1,
+            quantidade: 1
+          }
+        ]
+      });
+
+    expect(resposta.status).toBe(201);
+    expect(resposta.body).toHaveProperty('idPedido');
+    expect(resposta.body).toHaveProperty('valorTotal');
+  });
+
+  test('Deve rejeitar pedido com produto inexistente', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const resposta = await request(app)
+      .post('/pedidos')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        idUnidade: 1,
+        canalPedido: 'WEB',
+        itens: [
+          {
+            idProduto: 999999,
+            quantidade: 1
+          }
+        ]
+      });
+
+    expect(resposta.status).toBe(400);
+    expect(resposta.body.message).toBe('Produto não encontrado nesta unidade!');
+  });
+
+  test('Deve rejeitar pedido com estoque insuficiente', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const resposta = await request(app)
+      .post('/pedidos')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        idUnidade: 1,
+        canalPedido: 'WEB',
+        itens: [
+          {
+            idProduto: 1,
+            quantidade: 999999
+          }
+        ]
+      });
+
+    expect(resposta.status).toBe(400);
+    expect(resposta.body.message).toBe('Estoque insuficiente!');
+  });
+
+  test('Deve aprovar o pagamento de um pedido', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const pedido = await request(app)
+      .post('/pedidos')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        idUnidade: 1,
+        canalPedido: 'WEB',
+        itens: [
+          {
+            idProduto: 1,
+            quantidade: 1
+          }
+        ]
+      });
+
+    expect(pedido.status).toBe(201);
+
+    const resposta = await request(app)
+      .post(`/pedidos/${pedido.body.idPedido}/pagamento`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        resultadoPagamento: 'APROVADO'
+      });
+
+    expect(resposta.status).toBe(201);
+    expect(resposta.body.status).toBe('APROVADO');
+    expect(resposta.body).toHaveProperty('idPagamento');
+    expect(resposta.body).toHaveProperty('codigoTransacao');
+  });
+
+  test('Deve registrar pagamento negado de um pedido', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const pedido = await request(app)
+      .post('/pedidos')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        idUnidade: 1,
+        canalPedido: 'WEB',
+        itens: [
+          {
+            idProduto: 1,
+            quantidade: 1
+          }
+        ]
+      });
+
+    expect(pedido.status).toBe(201);
+
+    const resposta = await request(app)
+      .post(`/pedidos/${pedido.body.idPedido}/pagamento`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        resultadoPagamento: 'NEGADO'
+      });
+
+    expect(resposta.status).toBe(201);
+    expect(resposta.body.status).toBe('NEGADO');
+    expect(resposta.body).toHaveProperty('idPagamento');
+    expect(resposta.body).toHaveProperty('codigoTransacao');
+  });
+
+  test('Deve permitir que a cozinha atualize pedido pago para em preparo', async () => {
+    const tokenCliente = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const tokenCozinha = jwt.sign(
+      {
+        idUsuario: 3,
+        perfil: 'COZINHA',
+        idUnidade: 1
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const pedido = await request(app)
+      .post('/pedidos')
+      .set('Authorization', `Bearer ${tokenCliente}`)
+      .send({
+        idUnidade: 1,
+        canalPedido: 'WEB',
+        itens: [
+          {
+            idProduto: 1,
+            quantidade: 1
+          }
+        ]
+      });
+
+    expect(pedido.status).toBe(201);
+
+    const pagamento = await request(app)
+      .post(`/pedidos/${pedido.body.idPedido}/pagamento`)
+      .set('Authorization', `Bearer ${tokenCliente}`)
+      .send({
+        resultadoPagamento: 'APROVADO'
+      });
+
+    expect(pagamento.status).toBe(201);
+
+    const resposta = await request(app)
+      .patch(`/pedidos/${pedido.body.idPedido}/status`)
+      .set('Authorization', `Bearer ${tokenCozinha}`)
+      .send({
+        status: 'EM_PREPARO'
+      });
+
+    expect(resposta.status).toBe(200);
+    expect(resposta.body.status).toBe('EM_PREPARO');
+  });
+});
