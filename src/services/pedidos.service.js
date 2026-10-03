@@ -2,7 +2,9 @@ import {
   registrarPedido,
   buscarUnidadePorId,
   buscarProdutoPorUnidade,
-  buscarPedidos
+  buscarPedidos,
+  atualizarStatusPedido,
+  buscarPedidoPorId
 } from '#repositories/pedidos.repository.js';
 
 const CANAIS_VALIDOS = [
@@ -71,7 +73,35 @@ const consultarPedidos = async (idUsuario, canalPedido) => {
   return pedidos;
 };
 
+const atualizarStatus = async (idPedido, novoStatus) => {
+  const pedido = await buscarPedidoPorId(idPedido);
+
+  if (!pedido) {
+    throw new Error('Pedido não encontrado!');
+  }
+
+  const transicoesPermitidas = {
+    PAGO: 'EM_PREPARO',
+    EM_PREPARO: 'PRONTO',
+    PRONTO: 'ENTREGUE'
+  };
+
+  const proximoStatus = transicoesPermitidas[pedido.cd_status];
+
+  if (!proximoStatus || proximoStatus !== novoStatus) {
+    throw new Error('Transição de status inválida!');
+  }
+
+  await atualizarStatusPedido(idPedido, novoStatus);
+
+  return {
+    idPedido: idPedido,
+    status: novoStatus
+  };
+};
+
 export {
   criarPedido,
-  consultarPedidos
+  consultarPedidos,
+  atualizarStatus
 };

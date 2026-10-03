@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import { autenticarToken } from '#middlewares/auth.middleware.js';
+import { autorizarPerfis } from '#middlewares/autorizacao.middleware.js';
 import {
   cadastrarPedido,
-  consultarPedidos
+  consultarPedidos,
+  atualizarStatus
 } from '#controllers/pedidos.controller.js';
 
 const rotas = Router();
@@ -32,5 +34,20 @@ rotas.post('/', autenticarToken, cadastrarPedido);
  * @returns {Response401} 401 - Token não informado, inválido ou expirado.
  */
 rotas.get('/', autenticarToken, consultarPedidos);
+
+/**
+ * PATCH /pedidos/{id}/status
+ * @summary Atualiza o status de um pedido
+ * @tags Pedidos
+ * @description Atualiza o status respeitando as transições permitidas do pedido.
+ * @security BearerAuth
+ * @param {integer} id.path.required - ID do pedido
+ * @param {StatusPedidoRequest} request.body.required - Novo status do pedido
+ * @returns {StatusPedidoResponse} 200 - Status atualizado com sucesso.
+ * @returns {Response400} 400 - Transição de status inválida.
+ * @returns {Response401} 401 - Token não informado, inválido ou expirado.
+ * @returns {Response403} 403 - Usuário sem permissão para atualizar o status.
+ */
+rotas.patch('/:id/status', autenticarToken, autorizarPerfis('COZINHA', 'ATENDENTE'), atualizarStatus);
 
 export default rotas;

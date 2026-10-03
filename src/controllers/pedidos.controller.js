@@ -1,6 +1,7 @@
 import {
   criarPedido,
-  consultarPedidos as consultarPedidosService
+  consultarPedidos as consultarPedidosService,
+  atualizarStatus as atualizarStatusService
 } from '#services/pedidos.service.js';
 
 const cadastrarPedido = async (req, res) => {
@@ -34,7 +35,26 @@ const consultarPedidos = async (req, res) => {
   }
 };
 
+const atualizarStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const pedido = await atualizarStatusService(
+      id,
+      status
+    );
+
+    return res.status(200).json(pedido);
+  } catch (error) {
+    return res.status(400).json({
+      error: error.message
+    });
+  }
+};
+
 export {
   cadastrarPedido,
-  consultarPedidos
+  consultarPedidos,
+  atualizarStatus
 };

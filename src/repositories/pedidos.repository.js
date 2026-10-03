@@ -134,9 +134,39 @@ const buscarPedidos = async (idUsuario, canalPedido) => {
   return pedidos;
 };
 
+const atualizarStatusPedido = async (idPedido, status) => {
+  const query = `
+    UPDATE tb_pedido
+    SET cd_status = ?,
+        dt_atualizacao = NOW()
+    WHERE id_pedido = ?
+  `;
+
+  const [resultado] = await db.execute(query, [
+    status,
+    idPedido
+  ]);
+
+  return resultado.affectedRows;
+};
+
+const buscarPedidoPorId = async (idPedido) => {
+  const query = `
+    SELECT *
+    FROM tb_pedido
+    WHERE id_pedido = ?
+  `;
+
+  const [registros] = await db.execute(query, [idPedido]);
+
+  return registros[0];
+};
+
 export {
   buscarUnidadePorId,
   buscarProdutoPorUnidade,
   registrarPedido,
-  buscarPedidos
+  buscarPedidos,
+  atualizarStatusPedido,
+  buscarPedidoPorId
 };

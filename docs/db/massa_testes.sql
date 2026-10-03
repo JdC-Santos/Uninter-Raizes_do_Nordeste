@@ -42,3 +42,40 @@ INSERT INTO tb_unidade_produto (
 VALUES
 (1, 1, 50, 30.50, 1),
 (1, 2, 30, 15.25, 1);
+
+
+/* criando usuários do sistema para poder testar as rotas e permissoes */
+-- Usuários funcionários para testes
+-- Senha dos dois usuários: Teste@123
+
+INSERT INTO tb_usuario (
+  id_unidade,
+  nm_usuario,
+  ds_email,
+  ds_senha,
+  nr_cpf,
+  cd_perfil,
+  flg_ativo,
+  qt_pontos
+)
+VALUES
+(
+  1,
+  'Cozinha Teste',
+  'cozinha@teste.com',
+  '$2b$10$wY1rDwZSTUZ3fpid92KcX.lydeQ4VBzurlGjvra81TGe3XEaVAGlC',
+  '11144477735',
+  'COZINHA',
+  1,
+  0
+),
+(
+  1,
+  'Atendente Teste',
+  'atendente@teste.com',
+  '$2b$10$wY1rDwZSTUZ3fpid92KcX.lydeQ4VBzurlGjvra81TGe3XEaVAGlC',
+  '52998224725',
+  'ATENDENTE',
+  1,
+  0
+);
