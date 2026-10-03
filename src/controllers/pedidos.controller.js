@@ -4,20 +4,18 @@ import {
   atualizarStatus as atualizarStatusService
 } from '#services/pedidos.service.js';
 
-const cadastrarPedido = async (req, res) => {
+const cadastrarPedido = async (req, res, next) => {
   try {
     const { idUsuario } = req.usuario;
     const resultado = await criarPedido(idUsuario, req.body);
 
     return res.status(201).json(resultado);
   } catch (error) {
-    return res.status(400).json({
-      error: error.message
-    });
+    next(error);
   }
 };
 
-const consultarPedidos = async (req, res) => {
+const consultarPedidos = async (req, res, next) => {
   try {
     const idUsuario = req.usuario.idUsuario;
     const { canalPedido } = req.query;
@@ -29,13 +27,11 @@ const consultarPedidos = async (req, res) => {
 
     return res.status(200).json(pedidos);
   } catch (error) {
-    return res.status(400).json({
-      error: error.message
-    });
+    next(error);
   }
 };
 
-const atualizarStatus = async (req, res) => {
+const atualizarStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -47,9 +43,7 @@ const atualizarStatus = async (req, res) => {
 
     return res.status(200).json(pedido);
   } catch (error) {
-    return res.status(400).json({
-      error: error.message
-    });
+    next(error);
   }
 };
 

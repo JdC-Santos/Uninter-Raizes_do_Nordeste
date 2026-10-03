@@ -1,6 +1,6 @@
 import * as servicoClientes from '#services/clientes.service.js';
 
-const cadastrarCliente = async (req, res) => {
+const cadastrarCliente = async (req, res, next) => {
   try {
     const cliente = req.body;
     const idCliente = await servicoClientes.cadastrarCliente(cliente);
@@ -12,11 +12,7 @@ const cadastrarCliente = async (req, res) => {
 
     return res.status(201).json(resposta);
   } catch (error) {
-    const respostaComErro = {
-      error: error.message
-    };
-
-    return res.status(400).json(respostaComErro);
+    next(error);
   }
 };
 

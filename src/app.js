@@ -1,6 +1,7 @@
 import express from 'express';
 import expressJSDocSwagger from 'express-jsdoc-swagger';
 import swaggerOptions from '#infra/swagger.js';
+import { tratarErros } from '#middlewares/erros.middleware.js';
 import rotasClientes from '#routes/clientes.routes.js';
 import rotasAutenticacao from '#routes/auth.routes.js';
 import rotasPedidos from '#routes/pedidos.routes.js';
@@ -17,5 +18,6 @@ app.use('/auth', rotasAutenticacao);
 app.use('/pedidos', rotasPedidos);
 app.use(rotasPagamentos);
 
+app.use(tratarErros);
 
 export default app;

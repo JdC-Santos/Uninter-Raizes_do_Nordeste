@@ -4,9 +4,10 @@ const autenticarToken = (req, res, next) => {
   const authorization = req.headers.authorization;
 
   if (!authorization) {
-    return res.status(401).json({
-      error: 'Token não informado!'
-    });
+    const error = new Error('Token não informado!');
+    error.status = 401;
+    error.code = 'NAO_AUTENTICADO';
+    return next(error);
   }
 
   const [tipo, token] = authorization.split(' ');
@@ -14,9 +15,10 @@ const autenticarToken = (req, res, next) => {
   const tokenInvalido = tipo !== 'Bearer' || !token;
 
   if (tokenInvalido) {
-    return res.status(401).json({
-      error: 'Token inválido!'
-    });
+    const error = new Error('Token inválido ou expirado!');
+    error.status = 401;
+    error.code = 'TOKEN_INVALIDO';
+    return next(error);
   }
 
   try {
@@ -26,12 +28,11 @@ const autenticarToken = (req, res, next) => {
 
     return next();
 
-  } catch (error) {
-
-    return res.status(401).json({
-      error: 'Token inválido ou expirado!'
-    });
-    
+  } catch (err) {
+    let error = new Error('Token inválido ou expirado!');
+    error.status = 401;
+    error.code = 'TOKEN_INVALIDO';
+    return next(error);
   }
 };
 
