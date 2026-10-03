@@ -1,6 +1,9 @@
 import { Router } from 'express';
-import { cadastrarPedido } from '#controllers/pedidos.controller.js';
 import { autenticarToken } from '#middlewares/auth.middleware.js';
+import {
+  cadastrarPedido,
+  consultarPedidos
+} from '#controllers/pedidos.controller.js';
 
 const rotas = Router();
 
@@ -16,5 +19,18 @@ const rotas = Router();
  * @returns {Response401} 401 - Token não informado, inválido ou expirado.
  */
 rotas.post('/', autenticarToken, cadastrarPedido);
+
+/**
+ * GET /pedidos/
+ * @summary Consulta os pedidos do usuário
+ * @tags Pedidos
+ * @description Retorna os pedidos do usuário autenticado, permitindo filtrar pelo canal do pedido.
+ * @security BearerAuth
+ * @param {string} canalPedido.query - Canal do pedido (APP, TOTEM, BALCAO, PICKUP ou WEB)
+ * @returns {array<PedidoResponse>} 200 - Pedidos encontrados.
+ * @returns {Response400} 400 - Canal do pedido inválido.
+ * @returns {Response401} 401 - Token não informado, inválido ou expirado.
+ */
+rotas.get('/', autenticarToken, consultarPedidos);
 
 export default rotas;

@@ -1,7 +1,8 @@
 import {
   registrarPedido,
   buscarUnidadePorId,
-  buscarProdutoPorUnidade
+  buscarProdutoPorUnidade,
+  buscarPedidos
 } from '#repositories/pedidos.repository.js';
 
 const CANAIS_VALIDOS = [
@@ -55,6 +56,22 @@ const criarPedido = async (idUsuario, pedido) => {
   return registrarPedido(idUsuario, idUnidade, canalPedido, itens);
 };
 
+const consultarPedidos = async (idUsuario, canalPedido) => {
+  
+  const canalInvalido = canalPedido && !CANAIS_VALIDOS.includes(canalPedido)
+  if (canalInvalido) {
+    throw new Error('Canal do pedido inválido!');
+  }
+
+  const pedidos = await buscarPedidos(
+    idUsuario,
+    canalPedido
+  );
+
+  return pedidos;
+};
+
 export {
-  criarPedido
+  criarPedido,
+  consultarPedidos
 };

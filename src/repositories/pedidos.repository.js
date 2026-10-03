@@ -113,8 +113,30 @@ const registrarPedido = async (idUsuario, idUnidade, canalPedido, itens) => {
   }
 };
 
+const buscarPedidos = async (idUsuario, canalPedido) => {
+  let query = `
+    SELECT *
+    FROM tb_pedido
+    WHERE id_usuario = ?
+  `;
+
+  const valores = [idUsuario];
+
+  if (canalPedido) {
+    query += ` AND cd_canal = ?`;
+    valores.push(canalPedido);
+  }
+
+  query += ` ORDER BY dt_criacao DESC`;
+
+  const [pedidos] = await db.execute(query, valores);
+
+  return pedidos;
+};
+
 export {
   buscarUnidadePorId,
   buscarProdutoPorUnidade,
-  registrarPedido
+  registrarPedido,
+  buscarPedidos
 };
