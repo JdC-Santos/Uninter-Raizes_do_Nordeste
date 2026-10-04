@@ -3,7 +3,18 @@ import request from 'supertest';
 import app from '../app.js';
 import db from '#infra/database.js';
 
+const tokenCliente = jwt.sign(
+  {
+    idUsuario: 1,
+    perfil: 'CLIENTE',
+    idUnidade: null
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: '1h' }
+);
+
 describe('Autenticação das rotas protegidas', () => {
+
   afterAll(async () => {
     await db.end();
   });
@@ -327,5 +338,52 @@ describe('Autenticação das rotas protegidas', () => {
 
     expect(resposta.status).toBe(200);
     expect(resposta.body.status).toBe('EM_PREPARO');
+  });
+
+  it('deve realizar login com credenciais válidas', async () => {
+    const resposta = await request(app)
+      .post('/auth/login')
+      .send({
+        email: 'cozinha@teste.com',
+        senha: 'Teste@123'
+      });
+
+    expect(resposta.status).toBe(200);
+    expect(resposta.body).toHaveProperty('token');
+  });
+
+  it('deve rejeitar pedido sem canalPedido', async () => {
+    const resposta = await request(app)
+      .post('/pedidos')
+      .set('Authorization', `Bearer ${tokenCliente}`)
+      .send({
+        idUnidade: 1,
+        itens: [
+          {
+            idProduto: 1,
+            quantidade: 1
+          }
+        ]
+      });
+
+    expect(resposta.status).toBe(400);
+  });
+
+  it('deve rejeitar pedido com quantidade inválida', async () => {
+    const resposta = await request(app)
+      .post('/pedidos')
+      .set('Authorization', `Bearer ${tokenCliente}`)
+      .send({
+        idUnidade: 1,
+        canalPedido: 'WEB',
+        itens: [
+          {
+            idProduto: 1,
+            quantidade: -1
+          }
+        ]
+      });
+
+    expect(resposta.status).toBe(400);
   });
 });
