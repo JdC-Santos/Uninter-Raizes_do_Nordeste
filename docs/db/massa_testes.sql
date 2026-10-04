@@ -78,4 +78,14 @@ VALUES
   'ATENDENTE',
   1,
   0
+),
+(
+  1,
+  'Admin Teste',
+  'admin@teste.com',
+  '$2b$10$wY1rDwZSTUZ3fpid92KcX.lydeQ4VBzurlGjvra81TGe3XEaVAGlC',
+  '52998224726',
+  'ADMIN',
+  1,
+  0
 );

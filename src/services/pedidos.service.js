@@ -6,6 +6,7 @@ import {
   atualizarStatusPedido,
   buscarPedidoPorId
 } from '#repositories/pedidos.repository.js';
+import { registrar } from '#services/auditoria.service.js';
 
 const CANAIS_VALIDOS = [
   'APP',
@@ -55,11 +56,23 @@ const criarPedido = async (idUsuario, pedido) => {
     }
   }
 
-  return registrarPedido(idUsuario, idUnidade, canalPedido, itens);
+  const pedidoCriado = await registrarPedido(
+    idUsuario,
+    idUnidade,
+    canalPedido,
+    itens
+  );
+
+  await registrar(
+    idUsuario,
+    `Criou o pedido ${pedidoCriado.idPedido} pelo canal ${canalPedido}`
+  );
+
+  return pedidoCriado;
 };
 
 const consultarPedidos = async (idUsuario, canalPedido) => {
-  
+
   const canalInvalido = canalPedido && !CANAIS_VALIDOS.includes(canalPedido)
   if (canalInvalido) {
     throw new Error('Canal do pedido inválido!');
@@ -73,7 +86,7 @@ const consultarPedidos = async (idUsuario, canalPedido) => {
   return pedidos;
 };
 
-const atualizarStatus = async (idPedido, novoStatus) => {
+const atualizarStatus = async (idPedido, novoStatus, idUsuario) => {
   const pedido = await buscarPedidoPorId(idPedido);
 
   if (!pedido) {
@@ -93,6 +106,11 @@ const atualizarStatus = async (idPedido, novoStatus) => {
   }
 
   await atualizarStatusPedido(idPedido, novoStatus);
+
+  await registrar(
+    idUsuario,
+    `Alterou o status do pedido ${idPedido} de ${pedido.cd_status} para ${novoStatus}`
+  );
 
   return {
     idPedido: idPedido,

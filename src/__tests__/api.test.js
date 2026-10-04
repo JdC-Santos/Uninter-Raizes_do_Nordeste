@@ -386,4 +386,41 @@ describe('Autenticação das rotas protegidas', () => {
 
     expect(resposta.status).toBe(400);
   });
+
+  it('deve permitir que administrador consulte os registros de auditoria', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 1,
+        perfil: 'ADMIN',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const resposta = await request(app)
+      .get('/auditoria')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(resposta.status).toBe(200);
+    expect(Array.isArray(resposta.body)).toBe(true);
+  });
+
+  it('deve impedir que cliente consulte os registros de auditoria', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const resposta = await request(app)
+      .get('/auditoria')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(resposta.status).toBe(403);
+  });
 });

@@ -35,10 +35,12 @@ const atualizarStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
+    const { idUsuario } = req.usuario;
 
     const pedido = await atualizarStatusService(
       id,
-      status
+      status,
+      idUsuario
     );
 
     return res.status(200).json(pedido);

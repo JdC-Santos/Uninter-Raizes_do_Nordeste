@@ -3,8 +3,9 @@ import {
   registrarPagamento,
   atualizarStatusPedido
 } from '#repositories/pagamentos.repository.js';
+import { registrar } from '#services/auditoria.service.js';
 
-const processarPagamento = async (idPedido, resultadoPagamento) => {
+const processarPagamento = async (idPedido, resultadoPagamento, idUsuario) => {
   const pedido = await buscarPedidoPorId(idPedido);
 
   if (!pedido) {
@@ -33,6 +34,11 @@ const processarPagamento = async (idPedido, resultadoPagamento) => {
   if (resultadoPagamento === 'APROVADO') {
     await atualizarStatusPedido(idPedido, 'PAGO');
   }
+
+  await registrar(
+    idUsuario,
+    `Processou o pagamento do pedido ${idPedido} com resultado ${resultadoPagamento}`
+  );
 
   return {
     idPagamento,
