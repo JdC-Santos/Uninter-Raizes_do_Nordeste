@@ -15,7 +15,37 @@ const tokenCliente = jwt.sign(
 
 describe('Autenticação das rotas protegidas', () => {
 
+  let estoqueOriginalProduto1;
+
+  beforeAll(async () => {
+    const [registros] = await db.query(
+      `SELECT qt_produto
+       FROM tb_unidade_produto
+       WHERE tb_unidade_id_unidade = ?
+         AND tb_produto_id_produto = ?`,
+      [1, 1]
+    );
+
+    estoqueOriginalProduto1 = registros[0].qt_produto;
+
+    await db.query(
+      `UPDATE tb_unidade_produto
+       SET qt_produto = ?
+       WHERE tb_unidade_id_unidade = ?
+         AND tb_produto_id_produto = ?`,
+      [100, 1, 1]
+    );
+  });
+
   afterAll(async () => {
+    await db.query(
+      `UPDATE tb_unidade_produto
+       SET qt_produto = ?
+       WHERE tb_unidade_id_unidade = ?
+         AND tb_produto_id_produto = ?`,
+      [estoqueOriginalProduto1, 1, 1]
+    );
+
     await db.end();
   });
 
@@ -422,5 +452,51 @@ describe('Autenticação das rotas protegidas', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(resposta.status).toBe(403);
+  });
+
+  it('deve registrar auditoria ao criar um pedido', async () => {
+    const token = jwt.sign(
+      {
+        idUsuario: 2,
+        perfil: 'CLIENTE',
+        idUnidade: null
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const respostaPedido = await request(app)
+      .post('/pedidos')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        idUnidade: 1,
+        canalPedido: 'WEB',
+        itens: [
+          {
+            idProduto: 1,
+            quantidade: 1
+          }
+        ]
+      });
+
+    expect(respostaPedido.status).toBe(201);
+
+    const [registros] = await db.query(
+      `SELECT *
+       FROM tb_auditoria
+      WHERE id_usuario = ?
+        AND ds_acao LIKE ?
+      ORDER BY id_auditoria DESC
+      LIMIT 1`,
+      [
+        2,
+        `%Criou o pedido ${respostaPedido.body.idPedido}%`
+      ]
+    );
+
+    expect(registros.length).toBe(1);
+    expect(registros[0].ds_acao).toContain(
+      `Criou o pedido ${respostaPedido.body.idPedido}`
+    );
   });
 });
